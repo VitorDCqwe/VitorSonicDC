@@ -30,11 +30,11 @@ function preload() {
 }
 
 function create() {
-    player = this.physics.add.sprite(400, 300, 'player');
+    player = this.physics.add.sprite(650, 300, 'player');
     player.setScale(0.2);
-    enemy = this.physics.add.sprite(200, 500, 'enemy');
+    enemy = this.physics.add.sprite(100, 300, 'enemy');
     enemy.setScale(0.2);
-    sonic_boom = this.physics.add.group({
+    fogo = this.physics.add.group({
         defaultKey: "fogo",
         maxSize: 5,
         runChildUpdate: true,
@@ -53,5 +53,15 @@ function update() {
         player.y -= 3;
     } else if (cursors.down.isDown) {
         player.y += 3;
+    }
+    if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
+        playerProjetil();
+    }
+}
+
+function playerProjetil() {
+    const projetil = fogo.get(player.x,player.y - 20);
+    if (projetil) {
+        projetil.setActive(true).setVisible(true)
     }
 }
