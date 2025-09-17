@@ -32,8 +32,11 @@ function preload() {
 function create() {
     player = this.physics.add.sprite(650, 300, 'player');
     player.setScale(0.2);
+    player.setCollideWorldBounds(true)
     enemy = this.physics.add.sprite(100, 300, 'enemy');
     enemy.setScale(0.2);
+    enemy.setCollideWorldBounds(true)
+    enemy.setVelocityY(-270);
     fogo = this.physics.add.group({
         defaultKey: "fogo",
         maxSize: 5,
@@ -57,11 +60,20 @@ function update() {
     if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
         playerProjetil();
     }
+    if (enemy.y <=100) {
+        enemy.setVelocityY(270);
+    }
+    else if (enemy.y >=500) {
+        enemy.setVelocityY(-270); }
 }
 
 function playerProjetil() {
     const projetil = fogo.get(player.x,player.y - 20);
     if (projetil) {
-        projetil.setActive(true).setVisible(true)
+        projetil.setActive(true).setVisible(true).setScale(0.05);
+        projetil.body.enable = true;
+        projetil.body.allowGravity = false;
+        projetil.setVelocityX(-1000)
     }
 }
+
