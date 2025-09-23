@@ -22,11 +22,14 @@ let player;
 let cursors;
 let enemy;
 let fogo;
+let sonicboom;
+let lestEnemyShot = 0;
 
 function preload() {
     this.load.image('player', 'personagem.png');
     this.load.image('enemy', 'vilao.png');
     this.load.image('fogo', 'fogo.png');
+    this.load.image('sonicboom', 'warden-sonic-boom-pixilart.png');
 }
 
 function create() {
@@ -37,15 +40,23 @@ function create() {
     enemy.setScale(0.2);
     enemy.setCollideWorldBounds(true)
     enemy.setVelocityY(-270);
+    sonicboom = this.physics.add.group({
+        defaultKey: 'sonicboom',
+        maxSize: 5
+    });
     fogo = this.physics.add.group({
         defaultKey: "fogo",
         maxSize: 5,
         runChildUpdate: true,
-    })
+    });
+    this.physics.add.overlap(fogo, enemy, hitEnemy, null, this);
+    this.physics.add.overlap(sonicboom, player, hitPlayer, null,this);
+    this.physics.add.overlap(enemy, fogo, hitEnemy, null,this);
     cursors = this.input.keyboard.createCursorKeys();
+    enemyShootTime = setInterval(fireSonicBoom, 1500);
 }
 
-function update() {
+function update(time) {
     if (cursors.left.isDown) {
         player.x -= 3;
     } else if (cursors.right.isDown) {
@@ -64,7 +75,17 @@ function update() {
         enemy.setVelocityY(270);
     }
     else if (enemy.y >=500) {
-        enemy.setVelocityY(-270); }
+        enemy.setVelocityY(-270); };
+    if(time > lastEnemyShot + 1500) {
+        fireSonicBoom.call(this);
+        lastEnemyShot = time;
+    };
+    fogo.children.each(projetil => {
+        if (projetil.active && projetil.x < 0) projetil.setActive(false).setVisible(false);
+    });
+    sonicboom.children.each(projetil => {
+        if (projetil.active && projetil.x > 800) projetil.setActive(false).setVisible(false);
+    });
 }
 
 function playerProjetil() {
@@ -75,5 +96,4 @@ function playerProjetil() {
         projetil.body.allowGravity = false;
         projetil.setVelocityX(-1000)
     }
-}
-
+};
