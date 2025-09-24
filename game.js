@@ -23,7 +23,14 @@ let cursors;
 let enemy;
 let fogo;
 let sonicboom;
-let lestEnemyShot = 0;
+let lastEnemyShot = 0;
+let lives =5;
+let score = 0;
+let scoreText;
+let livesText;
+let enemyLife = 8;
+let enemyLifeText;
+let victoryText;
 
 function preload() {
     this.load.image('player', 'personagem.png');
@@ -53,7 +60,15 @@ function create() {
     this.physics.add.overlap(sonicboom, player, hitPlayer, null,this);
     this.physics.add.overlap(enemy, fogo, hitEnemy, null,this);
     cursors = this.input.keyboard.createCursorKeys();
-    enemyShootTime = setInterval(fireSonicBoom, 1500);
+
+    scoreText = this.add.text(16,16, 'Pontuação: 0', { fontSize: '20px', fill: '#fff'});
+    livesText = this.add.text(16,40, 'Vidas: 5', { fontSize: '20px', fill: '#fff'});
+
+    enemyLifeText = this.add.text(600,16, `Vida do Inimigo: ${enemyLife}`, { fontSize: '20px', fill: '#0088aaff'});
+
+    victoryTextText = this.add.text(400,300, 'Você Venceu!', { fontSize: '40px', fill: '#0f0'}).setOrigin(0.5).setVisible(false);
+
+    enemyShootTime = setInterval(projetilEnemy, 1500);
 }
 
 function update(time) {
@@ -77,7 +92,7 @@ function update(time) {
     else if (enemy.y >=500) {
         enemy.setVelocityY(-270); };
     if(time > lastEnemyShot + 1500) {
-        fireSonicBoom.call(this);
+        projetilEnemy.call(this);
         lastEnemyShot = time;
     };
     fogo.children.each(projetil => {
@@ -96,4 +111,22 @@ function playerProjetil() {
         projetil.body.allowGravity = false;
         projetil.setVelocityX(-1000)
     }
-};
+}
+
+function projetilEnemy() {
+    const projetil = sonicboom.get(enemy.x,enemy.y + 20);
+    if (projetil) {
+        projetil.setActive(true).setVisible(true).setScale(0.05);
+        projetil.body.enable = true;
+        projetil.body.allowGravity = false;
+        const angle = Phaser.Math.Angle.Between(projetil.x, projetil.y, player.x, player.y);
+        const speed = 200;
+        projetil.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+    }
+}
+
+function hitEnemy(projetil, enemy) {
+    projetil.disableBody(true, true);
+    score += 10;
+    scoreText.setText('Pontuação: ' + score);
+}
