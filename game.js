@@ -116,7 +116,7 @@ function playerProjetil() {
 function projetilEnemy() {
     const projetil = sonicboom.get(enemy.x,enemy.y + 20);
     if (projetil) {
-        projetil.setActive(true).setVisible(true).setScale(0.05);
+        projetil.setActive(true).setVisible(true).setScale(1);
         projetil.body.enable = true;
         projetil.body.allowGravity = false;
         const angle = Phaser.Math.Angle.Between(projetil.x, projetil.y, player.x, player.y);
@@ -127,6 +127,30 @@ function projetilEnemy() {
 
 function hitEnemy(projetil, enemy) {
     projetil.disableBody(true, true);
+    
     score += 10;
     scoreText.setText('Pontuação: ' + score);
+
+    enemyLife--;
+    enemyLifeText.setText(`Vida do Inimigo: ${enemyLife}`);
+
+    if (enemyLife <= 0) {
+        enemy.disableBody(true,true);
+        victoryText.setVisible(true);
+        clearInterval(enemyShootTime);
+        sonicboom.clear(true,true);
+    }
+}
+
+function hitPlayer(player, projetil) {
+    projetil.disableBody(true, true);
+
+    lives--;
+    livesText.setText(`Vidas: ${lives}`);
+
+    if(lives <= 0) {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        livesText.setText('Vidas: 0 (Game Over)');
+    }
 }
